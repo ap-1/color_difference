@@ -6,38 +6,73 @@ on:
       - main
 
 env:
-  CARGO_TERM_COLOR: always
+  ACTIONS_STEP_DEBUG: true
   PROJECT_NAME: color_difference
 
 jobs:
   release:
     strategy:
       matrix:
-        os: [ubuntu-latest, macos-latest, windows-latest]
+        os: [ubuntu-latest]
         rust:
           - stable
-    
+
     runs-on: ${{ matrix.os }}
 
     steps:
       - name: Checkout sources
         uses: actions/checkout@v2
-      
+
       - name: Install toolchain
         uses: actions-rs/toolchain@v1
         with:
           toolchain: ${{ matrix.rust }}
           override: true
           profile: minimal
-      
-      - name: Build sources
-        uses: actions-rs/cargo@v1
+
+      - name: Set up cache
+        uses: actions/cache@v2
         with:
-          command: build
-          args: --release
-      
-      - name: Upload artifacts
-        uses: actions/upload-artifact@v2
+          path: |
+            ~/.cargo/registry
+            ~/.cargo/git
+            target
+          key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
+
+      # Cross compilation stage
+      - name: Set up cross compilation
+        uses: actions-rs/install@v0.1
         with:
-          name: ${{ env.PROJECT_NAME }}
-          path: target/release/${{ env.PROJECT_NAME }}
+          crate: cross
+          version: latest
+          use-tool-cache: true
+
+      - name: Build for macOS
+        run: cross build --target x86_64-apple-darwin --release
+
+      - name: Build for Windows
+        run: cross build --target x86_64-pc-windows-gnu --release
+
+      - name: Build for Linux
+        run: cross build --target x86_64-unknown-linux-gnu --release
+
+      - name: Run UPX
+        uses: crazy-max/ghaction-upx@v1.4.0
+        with:
+          version: latest
+          files: |
+            target/x86_64-apple-darwin/release/${{ env.PROJECT_NAME }}
+            target/x86_64-pc-windows-gnu/release/${{ env.PROJECT_NAME }}.exe
+            target/x86_64-unknown-linux-gnu/release/${{ env.PROJECT_NAME }}
+          args: --brute
+      # End cross compilation stage
+
+      - name: Release with artifacts
+        uses: "marvinpinto/action-automatic-releases@latest"
+        with:
+          repo_token: "${{ secrets.GITHUB_TOKEN }}"
+          prerelease: false
+          files: |
+            target/x86_64-apple-darwin/release/${{ env.PROJECT_NAME }}
+            target/x86_64-pc-windows-gnu/release/${{ env.PROJECT_NAME }}.exe
+            target/x86_64-unknown-linux-gnu/release/${{ env.PROJECT_NAME }}
