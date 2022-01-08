@@ -42,8 +42,8 @@ jobs:
           key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
 
       - name: Set version output
-        id: version_step
-        run: echo "::set-output name=version::$(grep -oP '# color_difference\K.*' README.md | xargs)"
+        id: version
+        run: echo "::set-output name=ver::$(grep -oP '# color_difference\K.*' README.md | xargs)"
 
       - name: Build sources
         uses: actions-rs/cargo@v1
@@ -51,12 +51,12 @@ jobs:
           command: build
           args: --release
 
-      - name: Run UPX
-        uses: crazy-max/ghaction-upx@v1
-        with:
-          version: latest
-          files: target/release/${{ env.PROJECT_NAME }}
-          args: --brute
+      # - name: Run UPX
+      #   uses: crazy-max/ghaction-upx@v1
+      #   with:
+      #     version: latest
+      #     files: target/release/${{ env.PROJECT_NAME }}
+      #     args: --brute
 
       - name: Rename file
         run: cp target/release/${{ env.PROJECT_NAME }} x86_64-unknown-linux-gnu
@@ -68,7 +68,7 @@ jobs:
           path: x86_64-unknown-linux-gnu
 
     outputs:
-      version: ${{ steps.version_step.outputs.version }}
+      version: ${{ steps.version.outputs.ver }}
 
   macos:
     strategy:
@@ -212,13 +212,13 @@ jobs:
       - name: Release with artifacts
         uses: ncipollo/release-action@v1
         with:
+          name: Release ${{ needs.linux.outputs.version }}
+          body: See `checksum.txt` for SHA 256 checksums.
+          tag: ${{ needs.linux.outputs.version}}
+          token: ${{ secrets.GITHUB_TOKEN }}
+          commit: ${{ github.sha }}
           artifacts: >-
             checksum.txt,
             ${{ steps.linux.outputs.download-path }}/x86_64-unknown-linux-gnu,
             ${{ steps.macos.outputs.download-path }}/x86_64-apple-darwin,
             ${{ steps.windows.outputs.download-path }}/x86_64-pc-windows-gnu.exe
-          body: See checksum.txt for sha256 checksums.
-          commit: ${{ github.sha }}
-          name: Release ${{ needs.linux.outputs.version }}
-          tag: ${{ needs.linux.outputs.version}}
-          token: ${{ secrets.GITHUB_TOKEN }}
