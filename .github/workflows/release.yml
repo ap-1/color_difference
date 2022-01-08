@@ -212,7 +212,11 @@ jobs:
       - name: Release with artifacts
         uses: ncipollo/release-action@v1
         with:
-          artifacts: "checksum.txt,${{ steps.linux.outputs.download-path }},${{ steps.macos.outputs.download-path }},${{ steps.windows.outputs.download-path }}"
+          artifacts: >-
+            checksum.txt,
+            ${{ steps.linux.outputs.download-path }},
+            ${{ steps.macos.outputs.download-path }},
+            ${{ steps.windows.outputs.download-path }}
           body: See checksum.txt for sha256 checksums.
           commit: ${{ github.sha }}
           name: Release ${{ needs.linux.outputs.version }}
