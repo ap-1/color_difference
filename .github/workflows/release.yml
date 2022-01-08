@@ -94,11 +94,7 @@ jobs:
           args: --release
 
       - name: Run UPX
-        uses: crazy-max/ghaction-upx@v1.4.0
-        with:
-          version: latest
-          files: target/release/${{ env.PROJECT_NAME }}
-          args: --brute
+        run: echo "Not supported on darwin platform"
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v2
@@ -155,6 +151,8 @@ jobs:
           path: target/release/${{ env.PROJECT_NAME }}.exe
 
   release:
+    needs: [linux, macos, windows]
+
     strategy:
       matrix:
         os: [ubuntu-latest]
