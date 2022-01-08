@@ -210,11 +210,14 @@ jobs:
           patterns: artifacts/*
 
       - name: Release with artifacts
-        uses: ncipollo/release-action@v1
+        uses: "marvinpinto/action-automatic-releases@latest"
         with:
-          artifacts: "checksum.txt,${{ steps.linux.outputs.download-path }},${{ steps.macos.outputs.download-path }},${{ steps.windows.outputs.download-path }}"
-          body: See checksum.txt for sha256 checksums.
-          commit: ${{ github.sha }}
-          name: Release ${{ needs.linux.outputs.version }}
-          tag: ${{ needs.linux.outputs.version}}
-          token: ${{ secrets.GITHUB_TOKEN }}
+          repo_token: "${{ secrets.GITHUB_TOKEN }}"
+          prerelease: false
+          automatic_release_tag: "${{ needs.linux.outputs.version}}"
+          title: Release ${{ needs.linux.outputs.version }}
+          files: |
+            checksum.txt
+            ${{ steps.linux.outputs.download-path }}
+            ${{ steps.macos.outputs.download-path }}
+            ${{ steps.windows.outputs.download-path }}
