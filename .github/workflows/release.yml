@@ -72,7 +72,7 @@ jobs:
         with:
           name: Release $(grep -oP '# color_difference\K.*' README.md | xargs)
           body: See `checksum.txt` for SHA 256 checksums.
-          tag: $(grep -oP '# color_difference\K.*' README.md | xargs)
+          tag: latest
           token: ${{ secrets.GITHUB_TOKEN }}
           commit: ${{ github.sha }}
           artifacts: >-
