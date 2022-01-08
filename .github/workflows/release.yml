@@ -51,8 +51,8 @@ jobs:
           command: build
           args: --release
 
-      # - name: Strip artifact
-      #   run: strip target/release/${{ env.PROJECT_NAME }}
+      - name: Strip artifact
+        run: strip target/release/${{ env.PROJECT_NAME }}
 
       # - name: Run UPX
       #   uses: crazy-max/ghaction-upx@v1
@@ -163,7 +163,7 @@ jobs:
           args: --release
 
       - name: Strip artifact
-        run: echo "Not supported on windows platform"
+        run: strip target/release/${{ env.PROJECT_NAME }}
 
       - name: Run UPX
         uses: crazy-max/ghaction-upx@v1
