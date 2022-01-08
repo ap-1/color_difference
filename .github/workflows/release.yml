@@ -43,7 +43,7 @@ jobs:
 
       - name: Set version output
         id: version
-        run: echo "::set-output name=ver::$(grep -oP '# color_difference\K.*' README.md | xargs)"
+        run: echo "::set-output name=v::$(grep -oP '# color_difference\K.*' README.md | xargs)"
 
       - name: Build sources
         uses: actions-rs/cargo@v1
@@ -51,24 +51,24 @@ jobs:
           command: build
           args: --release
 
-      # - name: Run UPX
-      #   uses: crazy-max/ghaction-upx@v1
-      #   with:
-      #     version: latest
-      #     files: target/release/${{ env.PROJECT_NAME }}
-      #     args: --brute
+      - name: Run UPX
+        uses: crazy-max/ghaction-upx@v1
+        with:
+          version: latest
+          files: target/release/${{ env.PROJECT_NAME }}
+          args: --brute
 
       - name: Rename file
-        run: cp target/release/${{ env.PROJECT_NAME }} x86_64-unknown-linux-gnu
+        run: cp target/release/${{ env.PROJECT_NAME }} x86_64-unknown-linux-musl
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v2
         with:
-          name: x86_64-unknown-linux-gnu
-          path: x86_64-unknown-linux-gnu
+          name: x86_64-unknown-linux-musl
+          path: x86_64-unknown-linux-musl
 
     outputs:
-      version: ${{ steps.version.outputs.ver }}
+      version: ${{ steps.version.outputs.v }}
 
   macos:
     strategy:
@@ -182,7 +182,7 @@ jobs:
         uses: actions/download-artifact@v2
         id: linux
         with:
-          name: x86_64-unknown-linux-gnu
+          name: x86_64-unknown-linux-musl
           path: artifacts
 
       - name: Download macOS artifact
@@ -219,6 +219,6 @@ jobs:
           commit: ${{ github.sha }}
           artifacts: >-
             checksum.txt,
-            ${{ steps.linux.outputs.download-path }}/x86_64-unknown-linux-gnu,
+            ${{ steps.linux.outputs.download-path }}/x86_64-unknown-linux-musl,
             ${{ steps.macos.outputs.download-path }}/x86_64-apple-darwin,
             ${{ steps.windows.outputs.download-path }}/x86_64-pc-windows-gnu.exe
