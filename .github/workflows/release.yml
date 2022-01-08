@@ -45,14 +45,6 @@ jobs:
         uses: actions-rs/cargo@v1
         with:
           command: build
-          args: --release
-
-      - name: Run UPX
-        uses: crazy-max/ghaction-upx@v1
-        with:
-          version: latest
-          files: target/release/${{ env.PROJECT_NAME }}
-          args: --brute
 
       - name: Release with artifacts
         uses: ncipollo/release-action@v1
