@@ -165,21 +165,21 @@ jobs:
         id: linux
         with:
           name: x86_64-unknown-linux-gnu
-          path: artifacts
+          path: artifacts/linux
 
       - name: Download macOS artifact
         uses: actions/download-artifact@v2
         id: macos
         with:
           name: x86_64-apple-darwin
-          path: artifacts
+          path: artifacts/macos
 
       - name: Download Windows artifact
         uses: actions/download-artifact@v2
         id: windows
         with:
           name: x86_64-pc-windows-gnu
-          path: artifacts
+          path: artifacts/windows
 
       - name: Display downloaded artifacts
         run: ls -R -l
