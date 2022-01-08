@@ -67,12 +67,15 @@ jobs:
           output: checksum.txt
           patterns: x86_64-unknown-linux-gnu
 
+      - name: Set version output
+        run: export VERSION=$(grep -oP '# color_difference\K.*' README.md | xargs)
+
       - name: Release with artifacts
         uses: ncipollo/release-action@v1
         with:
-          name: Release ${{ needs.linux.outputs.version }}
+          name: Release ${{ env.VERSION }}
           body: See `checksum.txt` for SHA 256 checksums.
-          tag: ${{ needs.linux.outputs.version}}
+          tag: ${{ env.VERSION}}
           token: ${{ secrets.GITHUB_TOKEN }}
           commit: ${{ github.sha }}
           artifacts: >-
