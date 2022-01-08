@@ -25,9 +25,7 @@ jobs:
 
       - name: Output version
         id: version_step
-        run: |
-          export VERSION="$(grep -oP '# color_difference\K.*' README.md | xargs)" &&
-            echo "::set-output name=version_output::$VERSION"
+        run: echo "::set-output name=version_output::'$(grep -oP \'# color_difference\K.*\' README.md | xargs)'"
 
     outputs:
       version_output: ${{ steps.version_step.outputs.version_output }}
@@ -39,4 +37,4 @@ jobs:
 
     steps:
       - name: Test version number
-        run: echo "${{ needs.linux.version_step.outputs.version_output }}""
+        run: echo "${{ needs.linux.version_step.outputs.version_output }}"
