@@ -214,9 +214,9 @@ jobs:
         with:
           artifacts: >-
             checksum.txt,
-            ${{ steps.linux.outputs.download-path }},
-            ${{ steps.macos.outputs.download-path }},
-            ${{ steps.windows.outputs.download-path }}
+            ${{ steps.linux.outputs.download-path }}/x86_64-unknown-linux-gnu,
+            ${{ steps.macos.outputs.download-path }}/x86_64-apple-darwin,
+            ${{ steps.windows.outputs.download-path }}/x86_64-pc-windows-gnu.exe
           body: See checksum.txt for sha256 checksums.
           commit: ${{ github.sha }}
           name: Release ${{ needs.linux.outputs.version }}
