@@ -47,12 +47,12 @@ jobs:
           command: build
           args: --release
 
-      - name: Run UPX
-        uses: crazy-max/ghaction-upx@v1
-        with:
-          version: latest
-          files: target/release/${{ env.PROJECT_NAME }}
-          args: --brute
+      # - name: Run UPX
+      #   uses: crazy-max/ghaction-upx@v1
+      #   with:
+      #     version: latest
+      #     files: target/release/${{ env.PROJECT_NAME }}
+      #     args: --brute
 
       - name: Rename file
         run: cp target/release/${{ env.PROJECT_NAME }} x86_64-unknown-linux-gnu
