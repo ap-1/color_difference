@@ -163,7 +163,7 @@ jobs:
           args: --release
 
       - name: Strip artifact
-        run: strip target/release/${{ env.PROJECT_NAME }}
+        run: strip target/release/${{ env.PROJECT_NAME }}.exe
 
       - name: Run UPX
         uses: crazy-max/ghaction-upx@v1
