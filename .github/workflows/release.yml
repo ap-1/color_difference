@@ -43,7 +43,7 @@ jobs:
 
       - name: Set version output
         id: version
-        run: echo "::set-output name=v::$(grep -oP '# color_difference\K.*' README.md | xargs)"
+        run: echo "::set-output name=version::$(grep -m 1 -oP 'version = \K.*' Cargo.toml | xargs)"
 
       - name: Build sources
         uses: actions-rs/cargo@v1
@@ -67,7 +67,7 @@ jobs:
           path: x86_64-unknown-linux-gnu
 
     outputs:
-      version: ${{ steps.version.outputs.v }}
+      version: ${{ steps.version.outputs.version }}
 
   macos:
     strategy:
