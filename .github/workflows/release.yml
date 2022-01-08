@@ -28,7 +28,7 @@ jobs:
         run: echo "::set-output name=version::$(grep -oP '# color_difference\K.*' README.md | xargs)"
 
     outputs:
-      version_output: ${{ steps.version_step.outputs.version }}
+      version: ${{ steps.version_step.outputs.version }}
 
   release:
     needs: [linux]
