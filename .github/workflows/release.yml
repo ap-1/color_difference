@@ -39,4 +39,4 @@ jobs:
 
     steps:
       - name: Test version number
-        run: echo ${{ needs.linux.version_step.outputs.version_output }}
+        run: echo "${{ needs.linux.version_step.outputs.version_output }}""
