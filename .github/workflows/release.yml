@@ -57,13 +57,13 @@ jobs:
           args: --brute
 
       - name: Rename file
-        run: cp ./target/release/${{ env.PROJECT_NAME }} ./x86_64-unknown-linux-gnu
+        run: cp target/release/${{ env.PROJECT_NAME }} x86_64-unknown-linux-gnu
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v2
         with:
           name: x86_64-unknown-linux-gnu
-          path: target/release/${{ env.PROJECT_NAME }}
+          path: x86_64-unknown-linux-gnu
 
     outputs:
       version: ${{ steps.version_step.outputs.version }}
@@ -107,13 +107,13 @@ jobs:
         run: echo "Not supported on darwin platform"
 
       - name: Rename file
-        run: cp ./target/release/${{ env.PROJECT_NAME }} ./x86_64-apple-darwin
+        run: cp target/release/${{ env.PROJECT_NAME }} x86_64-apple-darwin
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v2
         with:
           name: x86_64-apple-darwin
-          path: target/release/${{ env.PROJECT_NAME }}
+          path: x86_64-apple-darwin
 
   windows:
     strategy:
@@ -158,13 +158,13 @@ jobs:
           args: --brute
 
       - name: Rename file
-        run: cp ./target/release/${{ env.PROJECT_NAME }}.exe ./x86_64-pc-windows-gnu.exe
+        run: cp target/release/${{ env.PROJECT_NAME }}.exe x86_64-pc-windows-gnu.exe
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v2
         with:
           name: x86_64-pc-windows-gnu
-          path: target/release/${{ env.PROJECT_NAME }}.exe
+          path: x86_64-pc-windows-gnu.exe
 
   release:
     needs: [linux, macos, windows]
