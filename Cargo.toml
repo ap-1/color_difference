@@ -8,6 +8,3 @@ license = "MIT OR Apache-2.0"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-clap = "3.0.5"
-deltae = "0.3.0"
-lab = "0.11.0"
