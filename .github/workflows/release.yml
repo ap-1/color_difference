@@ -10,7 +10,7 @@ env:
   PROJECT_NAME: color_difference
 
 jobs:
-  release:
+  linux:
     strategy:
       matrix:
         os: [ubuntu-latest]
@@ -39,33 +39,153 @@ jobs:
             target
           key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
 
-      # Cross compilation stage
-      - name: Set up cross compilation
-        uses: actions-rs/install@v0.1
+      - name: Build sources
+        uses: actions-rs/cargo@v1
         with:
-          crate: cross
-          version: latest
-          use-tool-cache: true
-
-      - name: Build for macOS
-        run: rustup target add x86_64-apple-darwin && cross build --target x86_64-apple-darwin --release
-
-      - name: Build for Windows
-        run: rustup target add x86_64-pc-windows-gnu && cross build --target x86_64-pc-windows-gnu --release
-
-      - name: Build for Linux
-        run: rustup target add x86_64-unknown-linux-gnu && cross build --target x86_64-unknown-linux-gnu --release
+          command: build
+          args: --release
 
       - name: Run UPX
         uses: crazy-max/ghaction-upx@v1.4.0
         with:
           version: latest
-          files: |
-            target/x86_64-apple-darwin/release/${{ env.PROJECT_NAME }}
-            target/x86_64-pc-windows-gnu/release/${{ env.PROJECT_NAME }}.exe
-            target/x86_64-unknown-linux-gnu/release/${{ env.PROJECT_NAME }}
+          files: target/release/${{ env.PROJECT_NAME }}
           args: --brute
-      # End cross compilation stage
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v2
+        with:
+          name: x86_64-unknown-linux-gnu
+          path: target/release/${{ env.PROJECT_NAME }}
+
+  macos:
+    strategy:
+      matrix:
+        os: [macos-latest]
+        rust:
+          - stable
+
+    runs-on: ${{ matrix.os }}
+
+    steps:
+      - name: Checkout sources
+        uses: actions/checkout@v2
+
+      - name: Install toolchain
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: ${{ matrix.rust }}
+          override: true
+          profile: minimal
+
+      - name: Set up cache
+        uses: actions/cache@v2
+        with:
+          path: |
+            ~/.cargo/registry
+            ~/.cargo/git
+            target
+          key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
+
+      - name: Build sources
+        uses: actions-rs/cargo@v1
+        with:
+          command: build
+          args: --release
+
+      - name: Run UPX
+        uses: crazy-max/ghaction-upx@v1.4.0
+        with:
+          version: latest
+          files: target/release/${{ env.PROJECT_NAME }}
+          args: --brute
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v2
+        with:
+          name: x86_64-apple-darwin
+          path: target/release/${{ env.PROJECT_NAME }}
+
+  windows:
+    strategy:
+      matrix:
+        os: [windows-latest]
+        rust:
+          - stable
+
+    runs-on: ${{ matrix.os }}
+
+    steps:
+      - name: Checkout sources
+        uses: actions/checkout@v2
+
+      - name: Install toolchain
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: ${{ matrix.rust }}
+          override: true
+          profile: minimal
+
+      - name: Set up cache
+        uses: actions/cache@v2
+        with:
+          path: |
+            ~/.cargo/registry
+            ~/.cargo/git
+            target
+          key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
+
+      - name: Build sources
+        uses: actions-rs/cargo@v1
+        with:
+          command: build
+          args: --release
+
+      - name: Run UPX
+        uses: crazy-max/ghaction-upx@v1.4.0
+        with:
+          version: latest
+          files: target/release/${{ env.PROJECT_NAME }}.exe
+          args: --brute
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v2
+        with:
+          name: x86_64-pc-windows-gnu
+          path: target/release/${{ env.PROJECT_NAME }}.exe
+
+  release:
+    strategy:
+      matrix:
+        os: [ubuntu-latest]
+
+    runs-on: ${{ matrix.os }}
+
+    steps:
+      - name: Download Linux artifact
+        uses: actions/download-artifact@v2
+        id: linux
+        with:
+          name: x86_64-unknown-linux-gnu
+          path: artifacts
+
+      - name: Download macOS artifact
+        uses: actions/download-artifact@v2
+        id: macos
+        with:
+          name: x86_64-apple-darwin
+          path: artifacts
+
+      - name: Download Windows artifact
+        uses: actions/download-artifact@v2
+        id: windows
+        with:
+          name: x86_64-pc-windows-gnu
+          path: artifacts
+
+      - name: Display downloaded artifacts
+        run: ls -R -l
+        working-directory: artifacts
 
       - name: Release with artifacts
         uses: "marvinpinto/action-automatic-releases@latest"
@@ -73,6 +193,6 @@ jobs:
           repo_token: "${{ secrets.GITHUB_TOKEN }}"
           prerelease: false
           files: |
-            target/x86_64-apple-darwin/release/${{ env.PROJECT_NAME }}
-            target/x86_64-pc-windows-gnu/release/${{ env.PROJECT_NAME }}.exe
-            target/x86_64-unknown-linux-gnu/release/${{ env.PROJECT_NAME }}
+            ${{steps.linux.outputs.download-path}}
+            ${{steps.macos.outputs.download-path}}
+            ${{steps.windows.outputs.download-path}}
