@@ -24,6 +24,12 @@ impl Rgb {
         [self.0, self.1, self.2]
     }
 
+    pub fn squared_distance(&self, other: Rgb) -> u32 {
+        (((self.0 as i32) - (other.0 as i32)).pow(2)
+            + ((self.1 as i32) - (other.1 as i32)).pow(2)
+            + ((self.2 as i32) - (other.2 as i32)).pow(2)) as u32
+    }
+
     pub fn to_lab(&self) -> deltae::LabValue {
         let lab = lab::Lab::from_rgb(&self.as_u8_array());
 
