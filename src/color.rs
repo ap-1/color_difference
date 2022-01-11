@@ -43,11 +43,7 @@ impl Rgb {
 
 impl From<&image::Rgb<u8>> for Rgb {
     fn from(rgb: &image::Rgb<u8>) -> Rgb {
-        Rgb {
-            0: rgb[0],
-            1: rgb[1],
-            2: rgb[2],
-        }
+        Rgb(rgb[0], rgb[1], rgb[2])
     }
 }
 
@@ -55,10 +51,6 @@ impl From<String> for Rgb {
     fn from(s: String) -> Rgb {
         let split = parse_str_to_rgb(s, 3);
 
-        Rgb {
-            0: split[0],
-            1: split[1],
-            2: split[2],
-        }
+        Rgb(split[0], split[1], split[2])
     }
 }
