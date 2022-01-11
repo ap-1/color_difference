@@ -1,6 +1,6 @@
 [package]
 name = "color_difference"
-version = "0.1.2"
+version = "0.1.3"
 authors = ["ap-1 <pallatianish@gmail.com>"]
 edition = "2021"
 description = "Command line tool to calculate color differences on local images using the CIEDE2000 algorithm"
