@@ -12,6 +12,7 @@ OPTIONS:
     -c, --color-file <COLOR_FILE>    Path to file containing RGBs separated by line
     -h, --help                       Print help information
     -i, --image-file <IMAGE_FILE>    Path to image to compare colors against
+    -s, --squared-dist               Calculate squared RGB distances as well
     -V, --version                    Print version information
 ```
 
